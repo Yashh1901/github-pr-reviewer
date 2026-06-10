@@ -1,7 +1,10 @@
+import hashlib
+import hmac
+
 import pytest
-from httpx import AsyncClient, ASGITransport
+from httpx import ASGITransport, AsyncClient
+
 from api.webhook import app
-import hashlib, hmac
 
 SECRET = "test_secret"
 
@@ -33,7 +36,6 @@ async def test_webhook_invalid_signature():
 
 @pytest.mark.asyncio
 async def test_webhook_pr_opened(monkeypatch):
-    import os
     monkeypatch.setenv("GITHUB_WEBHOOK_SECRET", SECRET)
     body = b'{"action":"opened","pull_request":{"number":42},"repository":{"full_name":"user/repo"}}'
     sig = make_signature(body, SECRET)

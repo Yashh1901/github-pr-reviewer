@@ -1,3 +1,6 @@
+# agents/security_agent.py
+
+
 class SecurityAgent:
     """Scans PR diff for security vulnerabilities."""
 
@@ -5,5 +8,5 @@ class SecurityAgent:
         self.llm = llm
 
     async def review(self, diff: str) -> str:
-        # TODO: implement full prompt + LLM call in Phase 4
+        # TODO: implement in Phase 4
         return "Security review placeholder"

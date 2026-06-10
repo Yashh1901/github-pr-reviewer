@@ -1,3 +1,6 @@
+# agents/code_reviewer.py
+
+
 class CodeReviewerAgent:
     """Analyzes PR diff for bugs, logic errors, style issues."""
 
@@ -5,5 +8,5 @@ class CodeReviewerAgent:
         self.llm = llm
 
     async def review(self, diff: str) -> str:
-        # TODO: implement full prompt + LLM call in Phase 4
+        # TODO: implement in Phase 4
         return "Code review placeholder"

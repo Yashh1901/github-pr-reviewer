@@ -1,5 +1,8 @@
-from github import Github
+# agents/fetcher.py
 import os
+
+from github import Github
+
 
 def fetch_pr_data(repo_name: str, pr_number: int) -> dict:
     """Fetch PR diff and metadata from GitHub."""

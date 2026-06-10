@@ -1,18 +1,22 @@
-from fastapi import FastAPI, Request, HTTPException, Header
+# api/webhook.py
 import hashlib
 import hmac
 import os
 
+from fastapi import FastAPI, Header, HTTPException, Request
+
 app = FastAPI(title="GitHub PR Reviewer")
+
 
 @app.get("/health")
 async def health():
     return {"status": "ok"}
 
+
 @app.post("/webhook")
 async def webhook(
     request: Request,
-    x_hub_signature_256: str = Header(None)
+    x_hub_signature_256: str = Header(None),
 ):
     body = await request.body()
     secret = os.getenv("GITHUB_WEBHOOK_SECRET", "")
@@ -26,12 +30,12 @@ async def webhook(
     if event == "pull_request":
         action = payload.get("action", "")
         if action in ("opened", "synchronize"):
-            # TODO: enqueue to RabbitMQ in Phase 2
             pr_number = payload["pull_request"]["number"]
             repo = payload["repository"]["full_name"]
             return {"status": "queued", "pr": pr_number, "repo": repo}
 
     return {"status": "ignored"}
+
 
 def _verify_signature(body: bytes, secret: str, signature: str) -> bool:
     if not signature:
