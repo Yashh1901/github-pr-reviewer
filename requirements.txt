@@ -24,3 +24,4 @@ PyGithub
 # testing
 pytest
 pytest-asyncio
+ruff
