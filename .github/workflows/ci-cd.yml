@@ -27,7 +27,7 @@ jobs:
           version: "latest"
 
       - name: Install dependencies
-        run: uv pip install --system ".[dev]"
+        run: uv pip install --system -r requirements.txt
 
       - name: Lint with ruff
         run: ruff check . --ignore E501
