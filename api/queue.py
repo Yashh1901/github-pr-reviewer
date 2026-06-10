@@ -1,7 +1,7 @@
 # api/queue.py
 import json
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import aio_pika
 
@@ -38,7 +38,7 @@ async def publish_pr_review_job(
                 "pr_number": pr_number,
                 "action": action,
                 "sha": sha,
-                "queued_at": datetime.now(timezone.utc).isoformat(),
+                "queued_at": datetime.now(UTC).isoformat(),
             }
 
             await channel.default_exchange.publish(

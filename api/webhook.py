@@ -4,7 +4,6 @@ import hmac
 import logging
 
 from fastapi import FastAPI, Header, HTTPException, Request
-from fastapi.responses import JSONResponse
 
 from api.config import get_settings
 from api.dedup import is_duplicate
