@@ -1,0 +1,26 @@
+# web
+fastapi
+uvicorn
+httpx
+
+# ai / agents
+langgraph
+langchain-google-genai
+langchain-core
+google-generativeai
+
+# queue
+aio-pika
+
+# cache
+redis
+
+# utils
+pydantic
+pydantic-settings
+python-dotenv
+PyGithub
+
+# testing
+pytest
+pytest-asyncio

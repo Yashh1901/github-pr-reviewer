@@ -1,0 +1,68 @@
+# ── Python ──────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+wheels/
+sdist/
+var/
+*.manifest
+*.spec
+
+# ── UV / Virtual env ────────────────────────────────────
+.venv/
+venv/
+env/
+ENV/
+.python-version
+
+# ── Environment variables ────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ── Testing ──────────────────────────────────────────────
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+*.coveragerc
+.tox/
+
+# ── Ruff / Linting ───────────────────────────────────────
+.ruff_cache/
+
+# ── Docker ───────────────────────────────────────────────
+*.dockerignore
+
+# ── IDEs ─────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ── Logs ─────────────────────────────────────────────────
+*.log
+logs/
+*.pid
+
+# ── AWS ──────────────────────────────────────────────────
+.aws/
+*.pem
+*.key
+
+# ── Misc ─────────────────────────────────────────────────
+.mypy_cache/
+.dmypy.json
+dmypy.json
+*.bak
+*.tmp

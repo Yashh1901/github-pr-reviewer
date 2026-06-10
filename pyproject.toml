@@ -1,0 +1,85 @@
+[project]
+name = "github-pr-reviewer"
+version = "0.1.0"
+description = "Agentic AI GitHub PR Reviewer with multi-agent LangGraph pipeline"
+readme = "README.md"
+requires-python = ">=3.12"
+
+dependencies = [
+    # web
+    "fastapi",
+    "uvicorn",
+    "httpx",
+
+    # ai / agents
+    "langgraph",
+    "langchain-google-genai",
+    "langchain-core",
+    "google-generativeai",
+
+    # queue
+    "aio-pika",
+
+    # cache
+    "redis",
+
+    # utils
+    "pydantic",
+    "pydantic-settings",
+    "python-dotenv",
+    "PyGithub",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-asyncio",
+    "ruff",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+dev-dependencies = [
+    "pytest",
+    "pytest-asyncio",
+    "ruff",
+]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+exclude = [
+    ".git",
+    "__pycache__",
+    ".venv",
+    "*.pyc",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "UP",  # pyupgrade
+]
+ignore = [
+    "E501",  # line too long (handled by formatter)
+    "B008",  # do not perform function calls in default args (FastAPI pattern)
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["api", "agents"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["api", "agents"]

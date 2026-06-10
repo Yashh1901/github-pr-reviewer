@@ -1,0 +1,6 @@
+# Install dependencies and generate lockfile
+uv sync
+
+# This creates:
+# .venv/          ← virtual environment
+# uv.lock         ← lockfile (commit this to git!)
