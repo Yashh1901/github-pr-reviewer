@@ -5,19 +5,20 @@ import logging
 
 from fastapi import FastAPI, Header, HTTPException, Request
 
-from api.config import get_settings
 from api.dedup import is_duplicate
 from api.queue import publish_pr_review_job
+from api.review import router as review_router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="GitHub PR Reviewer", version="0.1.0")
+app = FastAPI(title="GitHub PR Reviewer", version="0.2.0")
+app.include_router(review_router)
 
 
 @app.get("/health")
 async def health():
-    return {"status": "ok", "version": "0.1.0"}
+    return {"status": "ok", "version": "0.2.0"}
 
 
 @app.post("/webhook")
@@ -26,9 +27,12 @@ async def webhook(
     x_hub_signature_256: str = Header(None),
 ):
     body = await request.body()
-    settings = get_settings()
 
-    if not _verify_signature(body, settings.github_webhook_secret, x_hub_signature_256):
+    # Read fresh every request — not cached — so tests can patch via env
+    import os
+    secret = os.getenv("GITHUB_WEBHOOK_SECRET", "")
+
+    if not _verify_signature(body, secret, x_hub_signature_256):
         logger.warning("Invalid webhook signature received")
         raise HTTPException(status_code=401, detail="Invalid signature")
 
@@ -49,7 +53,6 @@ async def webhook(
     repo = payload["repository"]["full_name"]
     pr_number = pr["number"]
     sha = pr["head"]["sha"]
-    action = payload["action"]
 
     duplicate = await is_duplicate(repo, pr_number, sha)
     if duplicate:
@@ -63,18 +66,9 @@ async def webhook(
     )
 
     if not published:
-        raise HTTPException(
-            status_code=503,
-            detail="Failed to queue review job — try again later",
-        )
+        raise HTTPException(status_code=503, detail="Failed to queue review job")
 
-    logger.info("Queued PR review: %s#%s", repo, pr_number)
-    return {
-        "status": "queued",
-        "repo": repo,
-        "pr": pr_number,
-        "sha": sha,
-    }
+    return {"status": "queued", "repo": repo, "pr": pr_number, "sha": sha}
 
 
 def _verify_signature(body: bytes, secret: str, signature: str) -> bool:
