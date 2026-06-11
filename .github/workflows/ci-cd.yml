@@ -13,6 +13,17 @@ jobs:
     name: Lint and test
     runs-on: ubuntu-latest
 
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
 
@@ -37,6 +48,7 @@ jobs:
           GITHUB_WEBHOOK_SECRET: test_secret
           GITHUB_TOKEN: test_token
           GEMINI_API_KEY: test_key
+          REDIS_URL: redis://localhost:6379
         run: pytest tests/ -v --tb=short
 
   # ─── JOB 2: Build & Push Docker image ─────────────────

@@ -3,17 +3,18 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from agents.supervisor import build_graph
-
 
 def test_graph_builds():
+    from agents.supervisor import build_graph
     graph = build_graph()
     assert graph is not None
 
 
 @pytest.mark.asyncio
 async def test_full_graph_flow():
-    """Test the full graph with mocked LLM and GitHub API."""
+    """Test the full graph with mocked LLM, GitHub API, and Redis."""
+    from agents.supervisor import build_graph
+
     mock_pr_data = {
         "title": "Test PR",
         "body": "Test body",
@@ -30,9 +31,16 @@ async def test_full_graph_flow():
     mock_response = MagicMock()
     mock_response.content = "## Review\nLooks good!"
 
+    mock_redis = AsyncMock()
+    mock_redis.set = AsyncMock(return_value=True)
+    mock_redis.get = AsyncMock(return_value=None)
+    mock_redis.__aenter__ = AsyncMock(return_value=mock_redis)
+    mock_redis.__aexit__ = AsyncMock(return_value=None)
+
     with (
         patch("agents.supervisor.fetch_pr_data", return_value=mock_pr_data),
         patch("agents.supervisor.get_llm") as mock_llm_factory,
+        patch("agents.hitl.get_redis", return_value=mock_redis),
     ):
         mock_llm = AsyncMock()
         mock_llm.ainvoke = AsyncMock(return_value=mock_response)
@@ -48,6 +56,8 @@ async def test_full_graph_flow():
             "test_review": "",
             "final_report": "",
             "human_approved": False,
+            "human_action": "pending",
+            "review_id": "",
             "error": "",
         })
 
@@ -62,6 +72,8 @@ async def test_full_graph_flow():
 @pytest.mark.asyncio
 async def test_graph_handles_fetch_error():
     """Graph should degrade gracefully when GitHub API fails."""
+    from agents.supervisor import build_graph
+
     with patch(
         "agents.supervisor.fetch_pr_data",
         side_effect=Exception("GitHub API down"),
@@ -76,6 +88,8 @@ async def test_graph_handles_fetch_error():
             "test_review": "",
             "final_report": "",
             "human_approved": False,
+            "human_action": "pending",
+            "review_id": "",
             "error": "",
         })
 
